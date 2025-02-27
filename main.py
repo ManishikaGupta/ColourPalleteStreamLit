@@ -1,4 +1,4 @@
-import gradio as gr
+import streamlit as st
 import numpy as np
 from sklearn.cluster import KMeans
 from PIL import Image
@@ -856,7 +856,7 @@ accuracy_with_noise, report_with_noise = test_model_with_noise()
 
 accuracy_with_noise, report_with_noise
 
-# Gradio interface function
+# StreamLit interface function
 def color_recommendation(image, hair_color, eye_color):
     if image is None:
         return "Please upload an image."
@@ -870,15 +870,15 @@ def color_recommendation(image, hair_color, eye_color):
     else:
         return "No matching colors found in the dataset."
 
-# Create Gradio interface
-iface = gr.Interface(
+# Create StreamLit interface
+iface = st.Interface(
     fn=color_recommendation,
     inputs=[
-        gr.Image(type="numpy", label="Upload Image"),
-        gr.Dropdown(choices=["Black", "Brown", "Blonde"], label="Select Hair Color"),
-        gr.Dropdown(choices=["Black", "Brown", "Blue", "Gray"], label="Select Eye Color")
+        st.Image(type="numpy", label="Upload Image"),
+        st.Dropdown(choices=["Black", "Brown", "Blonde"], label="Select Hair Color"),
+        st.Dropdown(choices=["Black", "Brown", "Blue", "Gray"], label="Select Eye Color")
     ],
-    outputs=gr.HTML(),
+    outputs=st.HTML(),
     title="Color Recommendation Based on Skin Undertone, Hair, and Eye Color",
     description="Upload an image of your face, select your hair and eye colors, and receive color recommendations."
 )
