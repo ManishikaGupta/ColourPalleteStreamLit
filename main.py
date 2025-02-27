@@ -586,6 +586,9 @@ dataset = [
     },
 ]
 
+import streamlit as st
+from PIL import Image
+
 # Function to get recommended colors
 def get_recommended_colors(undertone, hair_color, eye_color):
     for entry in dataset:
@@ -604,33 +607,27 @@ def display_colors(colors):
         color_block = f"<div style='display:inline-block; width:100px; height:100px; margin:10px; background-color:rgb({r},{g},{b});'></div><p>{color_name}</p>"
         color_blocks += color_block
     return color_blocks
+
+# Streamlit app
+st.title("Color Recommendation Based on Skin Undertone, Hair, and Eye Color")
+st.write("Upload an image of your face, select your hair and eye colors, and receive color recommendations.")
+
+uploaded_image = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
+hair_color = st.selectbox("Select Hair Color", ["Black", "Brown", "Blonde"])
+eye_color = st.selectbox("Select Eye Color", ["Black", "Brown", "Blue", "Gray"])
+
+if uploaded_image:
+    image = Image.open(uploaded_image)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
     
-# StreamLit interface function
-def color_recommendation(image, hair_color, eye_color):
-    if image is None:
-        return "Please upload an image."
-
-    image = Image.fromarray(image)
-    undertone = find_dominant_skin_tone(image)
-
+    undertone = find_dominant_skin_tone(image)  # Ensure this function is defined
     recommended_colors = get_recommended_colors(undertone, hair_color, eye_color)
+
     if recommended_colors:
-        return f"Skin Undertone: {undertone}<br>Hair Color: {hair_color}<br>Eye Color: {eye_color}<br><br>{display_colors(recommended_colors)}"
+        st.write(f"**Skin Undertone:** {undertone}")
+        st.write(f"**Hair Color:** {hair_color}")
+        st.write(f"**Eye Color:** {eye_color}")
+        st.markdown(display_colors(recommended_colors), unsafe_allow_html=True)
     else:
-        return "No matching colors found in the dataset."
+        st.warning("No matching colors found in the dataset.")
 
-# Create StreamLit interface
-iface = st.Interface(
-    fn=color_recommendation,
-    inputs=[
-        st.Image(type="numpy", label="Upload Image"),
-        st.Dropdown(choices=["Black", "Brown", "Blonde"], label="Select Hair Color"),
-        st.Dropdown(choices=["Black", "Brown", "Blue", "Gray"], label="Select Eye Color")
-    ],
-    outputs=st.HTML(),
-    title="Color Recommendation Based on Skin Undertone, Hair, and Eye Color",
-    description="Upload an image of your face, select your hair and eye colors, and receive color recommendations."
-)
-
-# Launch the interface
-iface.launch(debug=True)
