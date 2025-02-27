@@ -594,15 +594,23 @@ def get_recommended_colors(undertone, hair_color, eye_color):
             return entry["Complementary Colors"]
     return []
 
-# Function to display color suggestions in the interface
-def display_colors(colors):
-    color_blocks = ""
-    for color in colors:
+# Function to display color suggestions in a grid
+def display_colors_grid(colors):
+    num_cols = 3  # Number of columns in the grid
+    cols = st.columns(num_cols)
+
+    for i, color in enumerate(colors):
+        col = cols[i % num_cols]  # Cycle through columns
         color_name = color["Color Name"]
         r, g, b = color["RGB"]
-        color_block = f"<div style='display:inline-block; width:100px; height:100px; margin:10px; background-color:rgb({r},{g},{b});'></div><p>{color_name}</p>"
-        color_blocks += color_block
-    return color_blocks
+        color_hex = f"#{r:02X}{g:02X}{b:02X}"
+
+        with col:
+            st.markdown(
+                f"<div style='width:100px; height:100px; background-color:{color_hex}; border-radius:10px;'></div>",
+                unsafe_allow_html=True
+            )
+            st.write(color_name)
 
 # Streamlit app
 st.title("Color Recommendation Based on Skin Undertone, Hair, and Eye Color")
@@ -625,9 +633,9 @@ if st.button("Get Recommendations"):
             st.write(f"**Skin Undertone:** {undertone}")
             st.write(f"**Hair Color:** {hair_color}")
             st.write(f"**Eye Color:** {eye_color}")
-            st.markdown(display_colors(recommended_colors), unsafe_allow_html=True)
+            st.write("### Recommended Colors:")
+            display_colors_grid(recommended_colors)
         else:
             st.warning("No matching colors found in the dataset.")
     else:
         st.error("Please upload an image first.")
-
