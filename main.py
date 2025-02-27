@@ -585,10 +585,6 @@ dataset = [
         ],
     },
 ]
-
-import streamlit as st
-from PIL import Image
-
 # Function to get recommended colors
 def get_recommended_colors(undertone, hair_color, eye_color):
     for entry in dataset:
@@ -616,18 +612,22 @@ uploaded_image = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
 hair_color = st.selectbox("Select Hair Color", ["Black", "Brown", "Blonde"])
 eye_color = st.selectbox("Select Eye Color", ["Black", "Brown", "Blue", "Gray"])
 
-if uploaded_image:
-    image = Image.open(uploaded_image)
-    st.image(image, caption="Uploaded Image", use_column_width=True)
-    
-    undertone = find_dominant_skin_tone(image)  # Ensure this function is defined
-    recommended_colors = get_recommended_colors(undertone, hair_color, eye_color)
+# Submit button
+if st.button("Get Recommendations"):
+    if uploaded_image:
+        image = Image.open(uploaded_image)
+        st.image(image, caption="Uploaded Image", use_container_width=True)
 
-    if recommended_colors:
-        st.write(f"**Skin Undertone:** {undertone}")
-        st.write(f"**Hair Color:** {hair_color}")
-        st.write(f"**Eye Color:** {eye_color}")
-        st.markdown(display_colors(recommended_colors), unsafe_allow_html=True)
+        undertone = find_dominant_skin_tone(image)  # Ensure this function is defined
+        recommended_colors = get_recommended_colors(undertone, hair_color, eye_color)
+
+        if recommended_colors:
+            st.write(f"**Skin Undertone:** {undertone}")
+            st.write(f"**Hair Color:** {hair_color}")
+            st.write(f"**Eye Color:** {eye_color}")
+            st.markdown(display_colors(recommended_colors), unsafe_allow_html=True)
+        else:
+            st.warning("No matching colors found in the dataset.")
     else:
-        st.warning("No matching colors found in the dataset.")
+        st.error("Please upload an image first.")
 
